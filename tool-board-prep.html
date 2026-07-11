@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Board Exam Readiness Check | Space to Learn</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Sanchez&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  :root { --tool: #3D7A16; --tool-dark: #27500A; --tool-light: #B8DCA0; --tool-bg: #EAF3DE; --tool-deeper: #122806; }
+  .tool-hero { background: var(--tool-bg); padding: 3rem 2rem 2.5rem; text-align: center; }
+  .tool-hero .cat { background: var(--tool-light); color: var(--tool-dark); padding: 4px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; display: inline-block; margin-bottom: 1rem; }
+  .tool-hero h1 { font-family: 'Fraunces', serif; font-size: 2.2rem; font-weight: 500; color: var(--tool-deeper); margin: 0 0 0.7rem; }
+  .tool-hero p { color: var(--tool-dark); max-width: 560px; margin: 0 auto; line-height: 1.7; }
+  .back-link { display: inline-block; margin-bottom: 1rem; font-size: 0.88rem; color: var(--tool-dark); text-decoration: none; }
+  .tool-body { max-width: 660px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+  .field-group { background: #fff; border: 1.5px solid var(--tool-light); border-radius: 14px; padding: 1.4rem 1.6rem; margin-bottom: 1rem; }
+  .field-group label { display: block; font-size: 0.88rem; font-weight: 600; color: #1a1a1a; margin-bottom: 0.5rem; }
+  .field-group input, .field-group select { width: 100%; padding: 0.6rem 0.8rem; border: 1.5px solid var(--tool-light); border-radius: 8px; font-family: 'Sanchez', serif; font-size: 0.95rem; color: #2a2a2a; background: var(--tool-bg); box-sizing: border-box; }
+  .field-hint { font-size: 0.8rem; color: #777; margin-top: 0.3rem; line-height: 1.5; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  @media (max-width: 500px) { .two-col { grid-template-columns: 1fr; } }
+  .go-btn { display: block; width: 100%; margin-top: 1.5rem; padding: 0.9rem; background: var(--tool-dark); color: #fff; border: none; border-radius: 12px; font-family: 'Fraunces', serif; font-size: 1.1rem; cursor: pointer; transition: opacity 0.15s; }
+  .go-btn:hover { opacity: 0.88; }
+
+  .result-box { display: none; margin-top: 1.5rem; }
+  .verdict-banner { border-radius: 16px; padding: 1.8rem 1.6rem; margin-bottom: 1.2rem; text-align: center; }
+  .verdict-banner .verdict-emoji { font-size: 2.5rem; margin-bottom: 0.4rem; }
+  .verdict-banner h2 { font-family: 'Fraunces', serif; font-size: 1.6rem; font-weight: 500; margin: 0 0 0.5rem; }
+  .verdict-banner p { font-size: 0.92rem; line-height: 1.7; margin: 0; max-width: 440px; margin: 0 auto; }
+  .verdict-track { background: #E1F5EE; } .verdict-track h2 { color: #0F6E56; } .verdict-track p { color: #085041; }
+  .verdict-close { background: #FAEEDA; } .verdict-close h2 { color: #854F0B; } .verdict-close p { color: #633806; }
+  .verdict-risk { background: #FAECE7; }  .verdict-risk h2 { color: #993C1D; }  .verdict-risk p { color: #4A1B0C; }
+
+  .stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.8rem; margin-bottom: 1.2rem; }
+  .stat-card { background: #fff; border: 1.5px solid var(--tool-light); border-radius: 12px; padding: 1rem; text-align: center; }
+  .stat-num { font-family: 'Fraunces', serif; font-size: 2rem; font-weight: 600; color: var(--tool-dark); line-height: 1; }
+  .stat-label { font-size: 0.76rem; color: #666; margin-top: 0.25rem; text-transform: uppercase; letter-spacing: 0.03em; }
+
+  .insight-list { background: #fff; border: 1.5px solid var(--tool-light); border-radius: 14px; padding: 1.2rem 1.4rem; }
+  .insight-list h4 { font-family: 'Fraunces', serif; font-size: 1rem; font-weight: 500; color: var(--tool-deeper); margin: 0 0 0.8rem; }
+  .insight-item { display: flex; gap: 0.7rem; align-items: flex-start; margin-bottom: 0.7rem; font-size: 0.9rem; line-height: 1.6; color: #333; }
+  .insight-icon { flex-shrink: 0; font-size: 1rem; margin-top: 0.05rem; }
+
+  .progress-section { background: var(--tool-bg); border-radius: 14px; padding: 1.4rem 1.6rem; margin-bottom: 1rem; }
+  .progress-section h4 { font-family: 'Fraunces', serif; font-size: 1rem; font-weight: 500; color: var(--tool-deeper); margin: 0 0 0.8rem; }
+  .prog-row { margin-bottom: 0.8rem; }
+  .prog-label { font-size: 0.84rem; color: #444; margin-bottom: 0.3rem; display: flex; justify-content: space-between; }
+  .prog-bar-wrap { background: #ddd; border-radius: 6px; height: 12px; }
+  .prog-bar { height: 100%; border-radius: 6px; transition: width 0.6s; }
+</style>
+</head>
+<body>
+<nav><a href="index.html" class="brand">Space to Learn</a><ul class="nav-links"><li><a href="index.html#tools">Tools</a></li><li><a href="index.html#wellbeing">Wellbeing</a></li></ul></nav>
+<div class="tool-hero">
+  <a href="index.html#tools" class="back-link">&larr; Back to tools</a>
+  <span class="cat">MD exam prep</span>
+  <h1>Are you on track for boards?</h1>
+  <p>Tell it when your exam is, how many Anki cards you have, and how many you are hitting each day. It will tell you the honest math: are you going to finish in time, and what does the rest of your prep need to look like.</p>
+</div>
+<div class="tool-body">
+  <div class="field-group">
+    <label for="exam-date">Exam date</label>
+    <input type="date" id="exam-date">
+  </div>
+  <div class="two-col">
+    <div class="field-group">
+      <label for="total-cards">Total Anki cards</label>
+      <input type="number" id="total-cards" min="1" placeholder="e.g. 20000">
+      <p class="field-hint">Total cards in your deck, including mature cards.</p>
+    </div>
+    <div class="field-group">
+      <label for="cards-done">Cards already matured</label>
+      <input type="number" id="cards-done" min="0" placeholder="e.g. 8000" value="0">
+      <p class="field-hint">Cards you have already reviewed to maturity.</p>
+    </div>
+  </div>
+  <div class="two-col">
+    <div class="field-group">
+      <label for="daily-new">New cards per day</label>
+      <input type="number" id="daily-new" min="0" placeholder="e.g. 100">
+      <p class="field-hint">New cards you are currently adding each day.</p>
+    </div>
+    <div class="field-group">
+      <label for="daily-reviews">Review cards per day</label>
+      <input type="number" id="daily-reviews" min="0" placeholder="e.g. 300">
+      <p class="field-hint">How many review cards you are getting through daily.</p>
+    </div>
+  </div>
+  <div class="field-group">
+    <label for="qbank-done">Percent of Qbank completed (%)</label>
+    <input type="number" id="qbank-done" min="0" max="100" placeholder="e.g. 35">
+    <p class="field-hint">What percentage of your question bank have you worked through?</p>
+  </div>
+  <button class="go-btn" onclick="calculate()">Check my readiness</button>
+
+  <div class="result-box" id="result-box">
+    <div class="verdict-banner" id="verdict-banner">
+      <div class="verdict-emoji" id="v-emoji"></div>
+      <h2 id="v-title"></h2>
+      <p id="v-text"></p>
+    </div>
+    <div class="stat-row" id="stat-row"></div>
+    <div class="progress-section">
+      <h4>Where you stand</h4>
+      <div id="prog-rows"></div>
+    </div>
+    <div class="insight-list">
+      <h4>What to do next</h4>
+      <div id="insights"></div>
+    </div>
+  </div>
+</div>
+<footer>&nbsp;</footer>
+<script>
+function calculate() {
+  const dateVal = document.getElementById('exam-date').value;
+  const totalCards = parseInt(document.getElementById('total-cards').value) || 0;
+  const cardsDone = parseInt(document.getElementById('cards-done').value) || 0;
+  const dailyNew = parseInt(document.getElementById('daily-new').value) || 0;
+  const dailyReviews = parseInt(document.getElementById('daily-reviews').value) || 0;
+  const qbankDone = parseInt(document.getElementById('qbank-done').value) || 0;
+
+  if (!dateVal || !totalCards) { alert('Please fill in your exam date and total Anki cards.'); return; }
+  const today = new Date(); today.setHours(0,0,0,0);
+  const exam = new Date(dateVal); exam.setHours(0,0,0,0);
+  const daysLeft = Math.round((exam - today) / 86400000);
+  if (daysLeft <= 0) { alert('That exam date looks like it has already passed.'); return; }
+
+  const cardsRemaining = Math.max(0, totalCards - cardsDone);
+  const daysToFinishCards = dailyNew > 0 ? Math.ceil(cardsRemaining / dailyNew) : Infinity;
+  const cardPct = Math.round(cardsDone / totalCards * 100);
+  const projectedCardsDone = Math.min(totalCards, cardsDone + dailyNew * daysLeft);
+  const projectedCardPct = Math.round(projectedCardsDone / totalCards * 100);
+  const cardsOnTrack = daysToFinishCards <= daysLeft;
+  const dailyReviewLoad = dailyNew > 0 ? Math.round(dailyNew * 8) : 0; // rough estimate: 8x new cards become reviews
+  const reviewsSustainable = dailyReviewLoad === 0 || dailyReviews >= dailyReviewLoad * 0.7;
+  const qbankOnTrack = qbankDone === 0 || (qbankDone / 100) >= (1 - daysLeft / 90);
+
+  // Verdict
+  let verdictClass, emoji, title, text;
+  const problems = [!cardsOnTrack, !reviewsSustainable, !qbankOnTrack].filter(Boolean).length;
+  if (problems === 0 && daysLeft >= 30) {
+    verdictClass = 'verdict-track'; emoji = '🌿'; title = 'You are on track';
+    text = `With ${daysLeft} days to go and your current pace, you are set to cover the material. Keep the consistency and do not let review debt build up.`;
+  } else if (problems <= 1 || daysLeft >= 60) {
+    verdictClass = 'verdict-close'; emoji = '⚡'; title = 'Getting there, but keep an eye on it';
+    text = `You have ${daysLeft} days and you are making progress. There are one or two things worth tightening up. The specific suggestions below will tell you what to focus on.`;
+  } else {
+    verdictClass = 'verdict-risk'; emoji = '🔥'; title = 'The pace needs to change';
+    text = `With ${daysLeft} days left and the current numbers, something has to shift. The good news: you still have time to course-correct. Read the suggestions below and pick the highest-leverage change.`;
+  }
+
+  document.getElementById('verdict-banner').className = 'verdict-banner ' + verdictClass;
+  document.getElementById('v-emoji').textContent = emoji;
+  document.getElementById('v-title').textContent = title;
+  document.getElementById('v-text').textContent = text;
+
+  // Stats
+  document.getElementById('stat-row').innerHTML = [
+    { num: daysLeft, label: 'Days left' },
+    { num: cardPct + '%', label: 'Cards matured' },
+    { num: cardsOnTrack ? '✓' : '✗', label: 'Cards on track' },
+    { num: qbankDone + '%', label: 'Qbank done' }
+  ].map(s => `<div class="stat-card"><div class="stat-num">${s.num}</div><div class="stat-label">${s.label}</div></div>`).join('');
+
+  // Progress bars
+  const progData = [
+    { label: 'Cards matured', pct: cardPct, proj: projectedCardPct, color: '#27500A' },
+    { label: 'Qbank completed', pct: qbankDone, color: '#0C447C' }
+  ];
+  document.getElementById('prog-rows').innerHTML = progData.map(p => `
+    <div class="prog-row">
+      <div class="prog-label"><span>${p.label}</span><span>${p.pct}%${p.proj && p.proj > p.pct ? ` (projected ${p.proj}% by exam)` : ''}</span></div>
+      <div class="prog-bar-wrap"><div class="prog-bar" style="width:${p.pct}%;background:${p.color}"></div></div>
+    </div>
+  `).join('');
+
+  // Insights
+  const insights = [];
+  if (!cardsOnTrack) {
+    const cardsNeededPerDay = Math.ceil(cardsRemaining / daysLeft);
+    insights.push({ icon: '📚', text: `At ${dailyNew} new cards/day, you will not finish all ${totalCards} cards before the exam. You need ${cardsNeededPerDay} new cards/day to clear the deck. Consider whether to raise the daily limit or triage your deck to the highest-yield material.` });
+  } else {
+    insights.push({ icon: '✅', text: `At ${dailyNew} new cards/day, you are projected to finish the deck ${daysToFinishCards === Infinity ? 'eventually' : `in ${daysToFinishCards} day${daysToFinishCards === 1 ? '' : 's'}`}. That leaves ${Math.max(0, daysLeft - daysToFinishCards)} day${Math.max(0, daysLeft - daysToFinishCards) === 1 ? '' : 's'} for pure review before the exam.` });
+  }
+  if (dailyNew > 0 && dailyReviews < dailyNew * 6) {
+    insights.push({ icon: '⚠️', text: `Your review count (${dailyReviews}/day) looks low relative to your new card pace. Review debt accumulates fast and is one of the most common reasons students feel unprepared despite doing Anki every day. Consider pausing new cards for a week and clearing the review pile.` });
+  }
+  if (qbankDone < 40 && daysLeft < 60) {
+    insights.push({ icon: '📝', text: `With ${daysLeft} days left and only ${qbankDone}% of Qbank done, consider ramping up timed blocks. Aim for at least 40 questions a day, timed, with a full review of explanations. The Qbank is where you learn to think like the exam, not just recall.` });
+  }
+  if (daysLeft <= 14) {
+    insights.push({ icon: '🔁', text: `You are in the final two weeks. Stop adding new cards now if you have not already. This is the time to drill review mode, do timed Qbank blocks, and revisit your weakest organ systems. Sleep is non-negotiable in this window.` });
+  }
+  if (daysLeft > 90) {
+    insights.push({ icon: '🗓️', text: `You have over three months. Do not cram now. Build the daily habit at a sustainable pace, because the students who perform best in boards are usually not the ones who went hardest in the last two weeks, they are the ones who did not fall apart from exhaustion.` });
+  }
+  if (insights.length === 0) {
+    insights.push({ icon: '🌿', text: 'Everything is looking solid. Keep the daily habit consistent and trust the process.' });
+  }
+  document.getElementById('insights').innerHTML = insights.map(i => `<div class="insight-item"><span class="insight-icon">${i.icon}</span><span>${i.text}</span></div>`).join('');
+
+  document.getElementById('result-box').style.display = 'block';
+  document.getElementById('result-box').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// Min date
+document.getElementById('exam-date').min = new Date().toISOString().split('T')[0];
+</script>
+</body>
+</html>

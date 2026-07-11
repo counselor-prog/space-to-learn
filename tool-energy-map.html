@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Energy Map | Space to Learn</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Sanchez&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  :root { --tool: #2C7DBF; --tool-dark: #0C447C; --tool-light: #B3D4F0; --tool-bg: #E6F1FB; --tool-deeper: #062B52; }
+  .tool-hero { background: var(--tool-bg); padding: 3rem 2rem 2.5rem; text-align: center; }
+  .tool-hero .cat { background: var(--tool-light); color: var(--tool-dark); padding: 4px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; display: inline-block; margin-bottom: 1rem; }
+  .tool-hero h1 { font-family: 'Fraunces', serif; font-size: 2.2rem; font-weight: 500; color: var(--tool-deeper); margin: 0 0 0.7rem; }
+  .tool-hero p { color: var(--tool-dark); max-width: 540px; margin: 0 auto; line-height: 1.7; }
+  .back-link { display: inline-block; margin-bottom: 1rem; font-size: 0.88rem; color: var(--tool-dark); text-decoration: none; }
+  .tool-body { max-width: 760px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+
+  .legend { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+  .legend-item { display: flex; align-items: center; gap: 0.4rem; font-size: 0.84rem; color: #444; }
+  .legend-dot { width: 14px; height: 14px; border-radius: 4px; }
+  .dot-high { background: #0C6E2A; }
+  .dot-med  { background: #F0A015; }
+  .dot-low  { background: #B0C4D8; }
+  .dot-none { background: #eee; border: 1px solid #ddd; }
+
+  .grid-wrap { overflow-x: auto; margin-bottom: 1.5rem; }
+  .grid-table { border-collapse: collapse; min-width: 500px; width: 100%; }
+  .grid-table th { font-size: 0.78rem; font-weight: 600; color: #555; text-align: center; padding: 6px 4px; }
+  .grid-table td.time-label { font-size: 0.78rem; color: #666; padding: 4px 8px 4px 0; white-space: nowrap; text-align: right; }
+  .energy-cell { width: 56px; height: 34px; border-radius: 6px; background: #eee; cursor: pointer; transition: background 0.12s, transform 0.1s; border: 2px solid transparent; }
+  .energy-cell:hover { transform: scale(1.08); border-color: var(--tool-dark); }
+  .energy-cell.high { background: #0C6E2A; }
+  .energy-cell.med  { background: #F0A015; }
+  .energy-cell.low  { background: #B0C4D8; }
+  .energy-cell.none { background: #eee; }
+  td { padding: 3px; }
+
+  .go-btn { display: block; width: 100%; padding: 0.9rem; background: var(--tool-dark); color: #fff; border: none; border-radius: 12px; font-family: 'Fraunces', serif; font-size: 1.1rem; cursor: pointer; transition: opacity 0.15s; margin-top: 0.5rem; }
+  .go-btn:hover { opacity: 0.88; }
+  .clear-btn { display: block; width: 100%; padding: 0.6rem; background: none; color: var(--tool-dark); border: 1.5px solid var(--tool-light); border-radius: 10px; font-family: 'Sanchez', serif; font-size: 0.88rem; cursor: pointer; margin-top: 0.6rem; }
+  .clear-btn:hover { background: var(--tool-bg); }
+
+  .result-section { display: none; margin-top: 2rem; }
+  .result-section h2 { font-family: 'Fraunces', serif; font-size: 1.5rem; font-weight: 500; color: var(--tool-deeper); margin: 0 0 1rem; }
+  .peak-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.8rem; margin-bottom: 1.5rem; }
+  .peak-card { background: var(--tool-bg); border-radius: 12px; padding: 1rem 1.2rem; border: 1.5px solid var(--tool-light); }
+  .peak-card.top-pick { background: var(--tool-dark); color: #fff; border-color: var(--tool-dark); }
+  .peak-card.top-pick .pc-label { color: rgba(255,255,255,0.75); }
+  .pc-time { font-family: 'Fraunces', serif; font-size: 1.3rem; font-weight: 500; }
+  .pc-label { font-size: 0.78rem; color: #666; margin-top: 0.2rem; }
+  .advice-box { background: #fff; border-left: 4px solid var(--tool-dark); border-radius: 8px; padding: 1.2rem 1.4rem; margin-bottom: 1rem; }
+  .advice-box h4 { font-family: 'Fraunces', serif; font-size: 1rem; font-weight: 500; color: var(--tool-deeper); margin: 0 0 0.4rem; }
+  .advice-box p { font-size: 0.9rem; color: #444; line-height: 1.6; margin: 0; }
+  .heat-row { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.4rem; }
+  .heat-bar-label { font-size: 0.8rem; color: #555; width: 80px; text-align: right; flex-shrink: 0; }
+  .heat-bar-wrap { flex: 1; background: #eee; border-radius: 4px; height: 12px; }
+  .heat-bar { height: 100%; border-radius: 4px; background: var(--tool-dark); transition: width 0.6s; }
+  .heat-score { font-size: 0.78rem; color: #777; width: 28px; }
+  .hour-summary { background: var(--tool-bg); border-radius: 14px; padding: 1.2rem 1.4rem; margin-top: 1rem; }
+  .hour-summary h4 { font-family: 'Fraunces', serif; font-size: 1rem; font-weight: 500; color: var(--tool-deeper); margin: 0 0 0.8rem; }
+</style>
+</head>
+<body>
+<nav><a href="index.html" class="brand">Space to Learn</a><ul class="nav-links"><li><a href="index.html#tools">Tools</a></li><li><a href="index.html#wellbeing">Wellbeing</a></li></ul></nav>
+<div class="tool-hero">
+  <a href="index.html#tools" class="back-link">&larr; Back to tools</a>
+  <span class="cat">Productivity</span>
+  <h1>When is your brain actually on?</h1>
+  <p>Click each time slot to rate your typical energy level. The map finds your natural peak hours so you can schedule hard work when your brain is actually cooperating.</p>
+</div>
+<div class="tool-body">
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot dot-high"></div> High energy</div>
+    <div class="legend-item"><div class="legend-dot dot-med"></div> Medium energy</div>
+    <div class="legend-item"><div class="legend-dot dot-low"></div> Low energy</div>
+    <div class="legend-item"><div class="legend-dot dot-none"></div> Not rated</div>
+  </div>
+  <p style="font-size:0.85rem;color:#666;margin-bottom:1rem;">Click a cell to cycle: empty &rarr; High &rarr; Medium &rarr; Low &rarr; empty. Rate as many slots as you like.</p>
+  <div class="grid-wrap">
+    <table class="grid-table" id="energy-grid"></table>
+  </div>
+  <button class="go-btn" onclick="analyzeEnergy()">Find my peak hours</button>
+  <button class="clear-btn" onclick="clearGrid()">Clear the grid</button>
+
+  <div class="result-section" id="result-section">
+    <h2>Your energy pattern</h2>
+    <div class="peak-cards" id="peak-cards"></div>
+    <div class="hour-summary" id="hour-summary">
+      <h4>Energy by time of day</h4>
+      <div id="heat-bars"></div>
+    </div>
+    <div id="advice-boxes" style="margin-top:1.2rem;"></div>
+  </div>
+</div>
+<footer>&nbsp;</footer>
+<script>
+const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+const timeSlots = [
+  '6am','7am','8am','9am','10am','11am',
+  '12pm','1pm','2pm','3pm','4pm','5pm',
+  '6pm','7pm','8pm','9pm','10pm'
+];
+const states = ['none','high','med','low'];
+const stateScore = { none: 0, high: 3, med: 2, low: 1 };
+const grid = {}; // grid[day][slot] = state
+
+// Initialize grid
+days.forEach(d => { grid[d] = {}; timeSlots.forEach(t => { grid[d][t] = 'none'; }); });
+
+function buildGrid() {
+  const table = document.getElementById('energy-grid');
+  let html = '<tr><th></th>' + days.map(d => `<th>${d}</th>`).join('') + '</tr>';
+  timeSlots.forEach(t => {
+    html += `<tr><td class="time-label">${t}</td>` + days.map(d => `<td><div class="energy-cell none" id="c-${d}-${t}" onclick="cycleCell('${d}','${t}')"></div></td>`).join('') + '</tr>';
+  });
+  table.innerHTML = html;
+}
+
+function cycleCell(day, slot) {
+  const current = grid[day][slot];
+  const nextIdx = (states.indexOf(current) + 1) % states.length;
+  grid[day][slot] = states[nextIdx];
+  const el = document.getElementById(`c-${day}-${slot}`);
+  el.className = 'energy-cell ' + states[nextIdx];
+}
+
+function clearGrid() {
+  days.forEach(d => timeSlots.forEach(t => {
+    grid[d][t] = 'none';
+    const el = document.getElementById(`c-${d}-${t}`);
+    if (el) el.className = 'energy-cell none';
+  }));
+  document.getElementById('result-section').style.display = 'none';
+}
+
+function analyzeEnergy() {
+  // Check if anything rated
+  const rated = days.some(d => timeSlots.some(t => grid[d][t] !== 'none'));
+  if (!rated) { alert('Click some time slots first to rate your energy levels.'); return; }
+
+  // Score by time slot across all days
+  const slotScores = {};
+  timeSlots.forEach(t => {
+    let total = 0; let count = 0;
+    days.forEach(d => { if (grid[d][t] !== 'none') { total += stateScore[grid[d][t]]; count++; } });
+    slotScores[t] = count > 0 ? total / count : 0;
+  });
+
+  // Find top 3 time slots
+  const sorted = [...timeSlots].filter(t => slotScores[t] > 0).sort((a, b) => slotScores[b] - slotScores[a]);
+  const top3 = sorted.slice(0, 3);
+
+  // Group into time-of-day buckets
+  const buckets = { Morning: ['6am','7am','8am','9am','10am','11am'], Afternoon: ['12pm','1pm','2pm','3pm'], Evening: ['4pm','5pm','6pm','7pm'], Night: ['8pm','9pm','10pm'] };
+  const bucketScores = {};
+  Object.entries(buckets).forEach(([label, slots]) => {
+    const vals = slots.map(t => slotScores[t]).filter(v => v > 0);
+    bucketScores[label] = vals.length ? vals.reduce((a,b) => a+b, 0) / vals.length : 0;
+  });
+  const topBucket = Object.entries(bucketScores).sort((a,b) => b[1]-a[1])[0][0];
+
+  // Peak cards
+  const pcEl = document.getElementById('peak-cards');
+  pcEl.innerHTML = top3.map((t, i) => `
+    <div class="peak-card ${i === 0 ? 'top-pick' : ''}">
+      <div class="pc-time">${t}</div>
+      <div class="pc-label">${i === 0 ? 'Best time to study' : i === 1 ? 'Second best window' : 'Third best window'}</div>
+    </div>
+  `).join('') || '<p style="color:#666;font-size:0.9rem;">Rate more time slots to see your peaks.</p>';
+
+  // Heat bars
+  const maxScore = 3;
+  const heatEl = document.getElementById('heat-bars');
+  heatEl.innerHTML = timeSlots.map(t => {
+    const pct = Math.round(slotScores[t] / maxScore * 100);
+    if (slotScores[t] === 0) return '';
+    const color = slotScores[t] >= 2.5 ? '#0C6E2A' : slotScores[t] >= 1.5 ? '#F0A015' : '#B0C4D8';
+    return `<div class="heat-row"><div class="heat-bar-label">${t}</div><div class="heat-bar-wrap"><div class="heat-bar" style="width:${pct}%;background:${color}"></div></div><div class="heat-score">${slotScores[t].toFixed(1)}</div></div>`;
+  }).join('');
+
+  // Advice
+  const advice = [];
+  if (top3.length > 0) {
+    advice.push({ title: `Schedule your hardest work at ${top3[0]}`, text: `That is when your brain is typically at its best. Use that window for reading, writing, problem sets, or anything that requires actual thinking. Protect it like an appointment.` });
+  }
+  const lowSlots = sorted.filter(t => slotScores[t] < 1.5 && slotScores[t] > 0);
+  if (lowSlots.length > 0) {
+    advice.push({ title: `Save ${lowSlots[0]} for low-stakes tasks`, text: `That window tends to be lower energy for you. Use it for email, re-reading notes, flashcard review, or anything that does not need deep focus.` });
+  }
+  const bucketAdvice = {
+    Morning: 'You are a morning person. Getting your study sessions in before noon means you are working with your biology instead of against it.',
+    Afternoon: 'Your peak is mid-day. A lot of people hit a wall after lunch, but not you. Take advantage of it.',
+    Evening: 'You tend to come alive in the evenings. Late afternoon or early evening study blocks may work better for you than forcing yourself to focus in the morning.',
+    Night: 'You do your best thinking at night. Just watch the sleep cost. Even one or two nights a week of very late studying can accumulate into a deficit that affects your performance.'
+  };
+  advice.push({ title: `You are a ${topBucket.toLowerCase()} person`, text: bucketAdvice[topBucket] });
+
+  document.getElementById('advice-boxes').innerHTML = advice.map(a => `<div class="advice-box"><h4>${a.title}</h4><p>${a.text}</p></div>`).join('');
+  document.getElementById('result-section').style.display = 'block';
+  document.getElementById('result-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+buildGrid();
+</script>
+</body>
+</html>

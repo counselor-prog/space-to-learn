@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The PAUSE Practice | Space to Learn</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Sanchez&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  :root { --tool: #5C52C8; --tool-dark: #3C3489; --tool-light: #C5C1F5; --tool-bg: #EEEDFE; --tool-deeper: #1A1660; }
+  .tool-hero { background: var(--tool-bg); padding: 3rem 2rem 2.5rem; text-align: center; }
+  .tool-hero .cat { background: var(--tool-light); color: var(--tool-dark); padding: 4px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; display: inline-block; margin-bottom: 1rem; }
+  .tool-hero h1 { font-family: 'Fraunces', serif; font-size: 2.2rem; font-weight: 500; color: var(--tool-deeper); margin: 0 0 0.7rem; }
+  .tool-hero p { color: var(--tool-dark); max-width: 540px; margin: 0 auto; line-height: 1.7; }
+  .back-link { display: inline-block; margin-bottom: 1rem; font-size: 0.88rem; color: var(--tool-dark); text-decoration: none; }
+  .tool-body { max-width: 620px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+
+  /* Steps list */
+  .steps-intro { background: #fff; border: 1.5px solid var(--tool-light); border-radius: 14px; padding: 1.4rem 1.6rem; margin-bottom: 1.5rem; }
+  .steps-intro h3 { font-family: 'Fraunces', serif; font-size: 1.1rem; font-weight: 500; color: var(--tool-deeper); margin: 0 0 0.9rem; }
+  .pause-row { display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 0.7rem; }
+  .pause-letter-badge { width: 36px; height: 36px; background: var(--tool-dark); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Fraunces', serif; font-size: 1.1rem; font-weight: 600; flex-shrink: 0; }
+  .pause-row-text strong { display: block; font-size: 0.9rem; color: var(--tool-deeper); }
+  .pause-row-text span { font-size: 0.84rem; color: #555; line-height: 1.5; }
+
+  .start-btn { display: block; width: 100%; padding: 0.9rem; background: var(--tool-dark); color: #fff; border: none; border-radius: 12px; font-family: 'Fraunces', serif; font-size: 1.1rem; cursor: pointer; transition: opacity 0.15s; }
+  .start-btn:hover { opacity: 0.88; }
+
+  /* Practice panel */
+  .practice-panel { display: none; text-align: center; }
+  .step-indicator { display: flex; justify-content: center; gap: 0.4rem; margin-bottom: 2rem; }
+  .step-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--tool-light); transition: background 0.3s; }
+  .step-dot.active { background: var(--tool-dark); }
+  .step-dot.done { background: var(--tool-light); opacity: 0.5; }
+
+  .breath-ring { width: 140px; height: 140px; border-radius: 50%; border: 4px solid var(--tool-light); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; position: relative; transition: transform 0.3s; }
+  .breath-ring.expand { animation: breathe-out 4s ease-in-out forwards; }
+  .breath-ring.contract { animation: breathe-in 4s ease-in-out forwards; }
+  @keyframes breathe-out { 0% { transform: scale(1); border-color: var(--tool-light); } 100% { transform: scale(1.22); border-color: var(--tool-dark); } }
+  @keyframes breathe-in  { 0% { transform: scale(1.22); border-color: var(--tool-dark); } 100% { transform: scale(1); border-color: var(--tool-light); } }
+
+  .step-letter { font-family: 'Fraunces', serif; font-size: 2.8rem; font-weight: 600; color: var(--tool-dark); line-height: 1; }
+  .step-title { font-family: 'Fraunces', serif; font-size: 1.5rem; font-weight: 500; color: var(--tool-deeper); margin-bottom: 0.5rem; }
+  .step-instruction { font-size: 0.95rem; color: #444; line-height: 1.7; max-width: 440px; margin: 0 auto 1.5rem; }
+  .step-mantra { background: var(--tool-bg); border-left: 3px solid var(--tool-dark); border-radius: 8px; padding: 0.8rem 1.2rem; font-size: 1rem; font-style: italic; color: var(--tool-deeper); margin: 0 auto 1.5rem; max-width: 380px; text-align: left; }
+
+  .timer-display { font-family: 'Fraunces', serif; font-size: 2rem; color: var(--tool-dark); margin-bottom: 1.5rem; }
+
+  .breath-label { font-size: 0.85rem; color: var(--tool-dark); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 1rem; height: 1.2em; }
+
+  .nav-btns { display: flex; gap: 0.8rem; justify-content: center; margin-top: 0.5rem; }
+  .nav-btn { padding: 0.65rem 1.6rem; border-radius: 10px; font-family: 'Sanchez', serif; font-size: 0.92rem; cursor: pointer; border: none; transition: opacity 0.15s; }
+  .nav-btn.primary { background: var(--tool-dark); color: #fff; }
+  .nav-btn.secondary { background: var(--tool-light); color: var(--tool-deeper); }
+  .nav-btn:hover { opacity: 0.85; }
+
+  .complete-panel { display: none; text-align: center; padding: 2rem; background: var(--tool-bg); border-radius: 16px; margin-top: 1rem; }
+  .complete-panel .big-emoji { font-size: 3rem; margin-bottom: 0.8rem; }
+  .complete-panel h2 { font-family: 'Fraunces', serif; font-size: 1.6rem; font-weight: 500; color: var(--tool-deeper); margin: 0 0 0.6rem; }
+  .complete-panel p { font-size: 0.92rem; color: #444; line-height: 1.7; margin: 0 0 1.5rem; }
+  .repeat-btn { padding: 0.7rem 2rem; background: var(--tool-dark); color: #fff; border: none; border-radius: 10px; font-family: 'Fraunces', serif; font-size: 1rem; cursor: pointer; }
+  .repeat-btn:hover { opacity: 0.88; }
+
+  .textarea-prompt { background: #fff; border: 1.5px solid var(--tool-light); border-radius: 10px; padding: 0.8rem 1rem; font-family: 'Sanchez', serif; font-size: 0.9rem; width: 100%; min-height: 80px; resize: vertical; box-sizing: border-box; margin-top: 0.8rem; color: #2a2a2a; }
+  .textarea-prompt::placeholder { color: #aaa; }
+</style>
+</head>
+<body>
+<nav><a href="index.html" class="brand">Space to Learn</a><ul class="nav-links"><li><a href="index.html#tools">Tools</a></li><li><a href="index.html#wellbeing">Wellbeing</a></li></ul></nav>
+<div class="tool-hero">
+  <a href="index.html#tools" class="back-link">&larr; Back to tools</a>
+  <span class="cat">Mindfulness practice</span>
+  <h1>The PAUSE practice</h1>
+  <p>Five steps. Five minutes. A way to interrupt a spiral before it takes over. You can do this anywhere, anytime you feel overwhelmed, anxious, or stuck.</p>
+</div>
+<div class="tool-body">
+  <!-- Intro -->
+  <div class="steps-intro" id="intro-panel">
+    <h3>What is PAUSE?</h3>
+    <div class="pause-row"><div class="pause-letter-badge">P</div><div class="pause-row-text"><strong>Pause and breathe</strong><span>Stop what you are doing. Take one slow, deliberate breath.</span></div></div>
+    <div class="pause-row"><div class="pause-letter-badge">A</div><div class="pause-row-text"><strong>Ask yourself</strong><span>What am I actually feeling right now? Name it without judging it.</span></div></div>
+    <div class="pause-row"><div class="pause-letter-badge">U</div><div class="pause-row-text"><strong>Understand the choice</strong><span>What is one small thing I can do, or let go of, right now?</span></div></div>
+    <div class="pause-row"><div class="pause-letter-badge">S</div><div class="pause-row-text"><strong>Say your mantra</strong><span>"Thinking is the root cause of suffering." Let the thought be there without feeding it.</span></div></div>
+    <div class="pause-row"><div class="pause-letter-badge">E</div><div class="pause-row-text"><strong>Experience your emotions</strong><span>Let yourself feel what is there, without trying to fix it or push it away.</span></div></div>
+  </div>
+  <button class="start-btn" id="start-btn" onclick="startPractice()">Start the practice</button>
+
+  <!-- Practice -->
+  <div class="practice-panel" id="practice-panel">
+    <div class="step-indicator" id="dots"></div>
+    <div class="breath-ring" id="breath-ring">
+      <div class="step-letter" id="step-letter"></div>
+    </div>
+    <div class="breath-label" id="breath-label"></div>
+    <div class="step-title" id="step-title"></div>
+    <div class="step-instruction" id="step-instruction"></div>
+    <div class="step-mantra" id="step-mantra" style="display:none;"></div>
+    <textarea class="textarea-prompt" id="step-textarea" style="display:none;" placeholder=""></textarea>
+    <div class="timer-display" id="timer-display"></div>
+    <div class="nav-btns">
+      <button class="nav-btn secondary" onclick="skipStep()">Skip</button>
+      <button class="nav-btn primary" id="next-btn" onclick="nextStep()">Next step &rarr;</button>
+    </div>
+  </div>
+
+  <!-- Complete -->
+  <div class="complete-panel" id="complete-panel">
+    <div class="big-emoji">🌿</div>
+    <h2>That was your PAUSE.</h2>
+    <p>You just gave yourself five minutes instead of letting the spiral decide. That is not nothing. Come back to this any time you need it.</p>
+    <button class="repeat-btn" onclick="restartAll()">Do it again</button>
+  </div>
+</div>
+<footer>&nbsp;</footer>
+<script>
+const steps = [
+  {
+    letter: 'P',
+    title: 'Pause and breathe',
+    instruction: 'Stop what you are doing. We are going to take three slow breaths together. Follow the circle.',
+    mantra: null,
+    textarea: null,
+    duration: 30,
+    breathe: true
+  },
+  {
+    letter: 'A',
+    title: 'Ask yourself',
+    instruction: 'What am I actually feeling right now? Do not try to fix it. Just name it. You might feel more than one thing at once, and that is fine.',
+    mantra: null,
+    textarea: 'Write it down if you like. "Right now I feel..."',
+    duration: 45
+  },
+  {
+    letter: 'U',
+    title: 'Understand the choice',
+    instruction: 'You always have at least one small choice available to you. It might be to take a break, to ask for help, to do the next smallest thing, or to simply not make things worse right now.',
+    mantra: null,
+    textarea: 'What is one thing you can choose right now?',
+    duration: 45
+  },
+  {
+    letter: 'S',
+    title: 'Say your mantra',
+    instruction: 'Read this slowly. Let it settle. You do not have to believe it completely. Just let it be there.',
+    mantra: '"Thinking is the root cause of suffering."',
+    textarea: null,
+    duration: 30
+  },
+  {
+    letter: 'E',
+    title: 'Experience your emotions',
+    instruction: 'Let yourself feel what is there, without trying to fix it, explain it, or push it away. Emotions move through when we stop fighting them. Just be here for a moment.',
+    mantra: null,
+    textarea: null,
+    duration: 40,
+    breathe: true
+  }
+];
+
+let currentStep = 0;
+let timerInterval = null;
+let breathInterval = null;
+let secondsLeft = 0;
+
+function startPractice() {
+  document.getElementById('intro-panel').style.display = 'none';
+  document.getElementById('start-btn').style.display = 'none';
+  document.getElementById('practice-panel').style.display = 'block';
+  buildDots();
+  showStep(0);
+}
+
+function buildDots() {
+  const dotsEl = document.getElementById('dots');
+  dotsEl.innerHTML = steps.map((_, i) => `<div class="step-dot" id="dot-${i}"></div>`).join('');
+}
+
+function updateDots(idx) {
+  steps.forEach((_, i) => {
+    const d = document.getElementById(`dot-${i}`);
+    d.className = 'step-dot' + (i === idx ? ' active' : i < idx ? ' done' : '');
+  });
+}
+
+function showStep(idx) {
+  clearTimers();
+  currentStep = idx;
+  updateDots(idx);
+  const s = steps[idx];
+  document.getElementById('step-letter').textContent = s.letter;
+  document.getElementById('step-title').textContent = s.title;
+  document.getElementById('step-instruction').textContent = s.instruction;
+  const mantraEl = document.getElementById('step-mantra');
+  if (s.mantra) { mantraEl.textContent = s.mantra; mantraEl.style.display = 'block'; }
+  else { mantraEl.style.display = 'none'; }
+  const taEl = document.getElementById('step-textarea');
+  if (s.textarea) { taEl.placeholder = s.textarea; taEl.style.display = 'block'; taEl.value = ''; }
+  else { taEl.style.display = 'none'; }
+  const nextBtn = document.getElementById('next-btn');
+  nextBtn.textContent = idx < steps.length - 1 ? 'Next step →' : 'Finish';
+  if (s.breathe) startBreathing(); else stopBreathing();
+  startTimer(s.duration);
+}
+
+function startBreathing() {
+  const ring = document.getElementById('breath-ring');
+  const label = document.getElementById('breath-label');
+  let phase = 0;
+  function cycle() {
+    if (phase % 2 === 0) {
+      ring.className = 'breath-ring expand'; label.textContent = 'Breathe in...';
+    } else {
+      ring.className = 'breath-ring contract'; label.textContent = 'Breathe out...';
+    }
+    phase++;
+    breathInterval = setTimeout(cycle, 4000);
+  }
+  cycle();
+}
+
+function stopBreathing() {
+  clearTimeout(breathInterval);
+  breathInterval = null;
+  document.getElementById('breath-ring').className = 'breath-ring';
+  document.getElementById('breath-label').textContent = '';
+}
+
+function startTimer(seconds) {
+  secondsLeft = seconds;
+  updateTimerDisplay();
+  timerInterval = setInterval(() => {
+    secondsLeft--;
+    updateTimerDisplay();
+    if (secondsLeft <= 0) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      document.getElementById('timer-display').textContent = '';
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const m = Math.floor(secondsLeft / 60);
+  const s = secondsLeft % 60;
+  document.getElementById('timer-display').textContent = m > 0 ? `${m}:${s.toString().padStart(2,'0')}` : secondsLeft > 0 ? `${secondsLeft}s` : '';
+}
+
+function clearTimers() {
+  clearInterval(timerInterval); timerInterval = null;
+  clearTimeout(breathInterval); breathInterval = null;
+  document.getElementById('breath-ring').className = 'breath-ring';
+  document.getElementById('breath-label').textContent = '';
+}
+
+function nextStep() {
+  if (currentStep < steps.length - 1) {
+    showStep(currentStep + 1);
+  } else {
+    finishPractice();
+  }
+}
+
+function skipStep() {
+  nextStep();
+}
+
+function finishPractice() {
+  clearTimers();
+  document.getElementById('practice-panel').style.display = 'none';
+  document.getElementById('complete-panel').style.display = 'block';
+}
+
+function restartAll() {
+  document.getElementById('complete-panel').style.display = 'none';
+  document.getElementById('intro-panel').style.display = 'block';
+  document.getElementById('start-btn').style.display = 'block';
+}
+</script>
+</body>
+</html>

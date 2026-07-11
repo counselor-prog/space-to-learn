@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Are you running on empty? | Space to Learn</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Sanchez&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  :root { --tool: #D85A30; --tool-dark: #993C1D; --tool-light: #F5C4B3; --tool-bg: #FAECE7; --tool-deeper: #4A1B0C; }
+  .tool-hero { background: var(--tool-bg); padding: 3rem 2rem 2.5rem; text-align: center; }
+  .tool-hero .cat { background: var(--tool-light); color: var(--tool-dark); padding: 4px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; display: inline-block; margin-bottom: 1rem; }
+  .tool-hero h1 { font-family: 'Fraunces', serif; font-size: 2.2rem; font-weight: 500; color: var(--tool-deeper); margin: 0 0 0.7rem; }
+  .tool-hero p { color: var(--tool-dark); max-width: 540px; margin: 0 auto; line-height: 1.7; }
+  .tool-body { max-width: 680px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+  .q-block { background: #fff; border: 1px solid var(--tool-light); border-radius: 14px; padding: 1.2rem 1.4rem; margin-bottom: 0.8rem; }
+  .q-block p { font-size: 0.95rem; color: #2a2a2a; margin: 0 0 0.8rem; font-weight: 500; }
+  .q-options { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .q-options label { cursor: pointer; padding: 6px 14px; border-radius: 20px; font-size: 0.82rem; border: 1.5px solid var(--tool-light); background: var(--tool-bg); color: var(--tool-dark); transition: all 0.12s; }
+  .q-options input { display: none; }
+  .q-options label:has(input:checked) { background: var(--tool-dark); color: #fff; border-color: var(--tool-dark); }
+  .go-btn { display: block; width: 100%; margin-top: 1.5rem; padding: 0.9rem; background: var(--tool-dark); color: #fff; border: none; border-radius: 12px; font-family: 'Fraunces', serif; font-size: 1.1rem; cursor: pointer; transition: opacity 0.15s; }
+  .go-btn:hover { opacity: 0.88; }
+  .result-box { display: none; border-radius: 16px; padding: 2rem; margin-top: 1.5rem; text-align: center; }
+  .result-box h2 { font-family: 'Fraunces', serif; font-size: 1.6rem; font-weight: 500; margin: 0 0 0.6rem; }
+  .result-box p { font-size: 0.95rem; line-height: 1.7; margin: 0; }
+  .result-well { background: #E1F5EE; } .result-well h2 { color: #0F6E56; } .result-well p { color: #085041; }
+  .result-watch { background: #FAEEDA; } .result-watch h2 { color: #854F0B; } .result-watch p { color: #633806; }
+  .result-zone { background: var(--tool-bg); } .result-zone h2 { color: var(--tool-dark); } .result-zone p { color: var(--tool-deeper); }
+  .result-emoji { font-size: 2.5rem; margin-bottom: 0.5rem; }
+  .progress-bar { height: 6px; background: var(--tool-light); border-radius: 3px; margin-bottom: 1.5rem; }
+  .progress-fill { height: 100%; background: var(--tool-dark); border-radius: 3px; transition: width 0.4s; width: 0%; }
+</style>
+</head>
+<body>
+<nav><a href="index.html" class="brand">Space to Learn</a><ul class="nav-links"><li><a href="index.html#tools">Tools</a></li><li><a href="index.html#wellbeing">Wellbeing</a></li></ul></nav>
+<div class="tool-hero">
+  <a href="index.html#tools" class="back-link" style="color: var(--tool-dark);">&larr; Back to tools</a>
+  <span class="cat">Wellbeing quiz</span>
+  <h1>Are you running on empty?</h1>
+  <p>A short, honest check-in on where you are right now. Not what you should be feeling. Where you actually are.</p>
+</div>
+<div class="tool-body">
+  <div class="progress-bar"><div class="progress-fill" id="pbar"></div></div>
+  <div id="questions"></div>
+  <button class="go-btn" onclick="scoreIt()">Show me where I am</button>
+  <div class="result-box" id="result">
+    <div class="result-emoji" id="r-emoji"></div>
+    <h2 id="r-title"></h2>
+    <p id="r-text"></p>
+  </div>
+</div>
+<footer>&nbsp;</footer>
+<script>
+const qs = [
+  "I feel emotionally drained at the end of most days.",
+  "I find it hard to care about things I used to care about.",
+  "I feel detached or disconnected from the people around me.",
+  "Small tasks feel much harder than they should.",
+  "I have been sleeping more than usual, or struggling to sleep.",
+  "I feel like nothing I do makes much difference.",
+  "I have been getting more irritable or impatient than normal.",
+  "I feel physically tired even after a full night of sleep.",
+  "I find myself dreading things I used to look forward to.",
+  "I feel like I am falling behind and will never catch up.",
+  "I have been withdrawing from friends or social situations.",
+  "I feel like I am just going through the motions."
+];
+const opts = ["Never","Sometimes","Often","Always"];
+const container = document.getElementById('questions');
+qs.forEach((q, i) => {
+  const b = document.createElement('div'); b.className = 'q-block';
+  b.innerHTML = `<p>${i+1}. ${q}</p><div class="q-options">${opts.map((o,v)=>`<label><input type="radio" name="q${i}" value="${v+1}"><span>${o}</span></label>`).join('')}</div>`;
+  container.appendChild(b);
+});
+document.querySelectorAll('input[type=radio]').forEach(r => r.addEventListener('change', () => {
+  const answered = document.querySelectorAll('input:checked').length;
+  document.getElementById('pbar').style.width = (answered/qs.length*100)+'%';
+}));
+function scoreIt() {
+  const checked = document.querySelectorAll('input:checked');
+  if (checked.length < qs.length) { alert('Answer all 12 questions first — be honest, not aspirational.'); return; }
+  let total = 0;
+  checked.forEach(c => total += parseInt(c.value));
+  const res = document.getElementById('result');
+  const emoji = document.getElementById('r-emoji');
+  const title = document.getElementById('r-title');
+  const text = document.getElementById('r-text');
+  res.className = 'result-box';
+  if (total <= 20) {
+    res.classList.add('result-well'); emoji.textContent = '🌱';
+    title.textContent = "You're doing alright.";
+    text.textContent = "Your score suggests you're managing reasonably well. That doesn't mean ignore this. It means you have capacity right now to protect. Look at what's working and keep doing it. Check in again in a few weeks.";
+  } else if (total <= 32) {
+    res.classList.add('result-watch'); emoji.textContent = '⚡';
+    title.textContent = "Worth paying attention to.";
+    text.textContent = "You're not in crisis, but some of the signals here matter. Something is draining more than it's giving. This is the right time to make one small change — not overhaul everything, just reduce one thing that's costing you and add one thing that restores you.";
+  } else {
+    res.classList.add('result-zone'); emoji.textContent = '🔴';
+    title.textContent = "You're in burnout territory.";
+    text.textContent = "These scores are telling you something real. This isn't a willpower problem. Your system is overloaded and has been for a while. Please talk to someone — a counsellor, a doctor, or someone you trust. The resources on this site's wellbeing page are a good place to start.";
+  }
+  res.style.display = 'block';
+  res.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+</script>
+</body></html>

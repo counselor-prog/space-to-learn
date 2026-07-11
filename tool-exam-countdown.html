@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exam Countdown Calculator | Space to Learn</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Sanchez&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  :root { --tool: #1A9278; --tool-dark: #0F6E56; --tool-light: #A8DDD0; --tool-bg: #E1F5EE; --tool-deeper: #054034; }
+  .tool-hero { background: var(--tool-bg); padding: 3rem 2rem 2.5rem; text-align: center; }
+  .tool-hero .cat { background: var(--tool-light); color: var(--tool-dark); padding: 4px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; display: inline-block; margin-bottom: 1rem; }
+  .tool-hero h1 { font-family: 'Fraunces', serif; font-size: 2.2rem; font-weight: 500; color: var(--tool-deeper); margin: 0 0 0.7rem; }
+  .tool-hero p { color: var(--tool-dark); max-width: 540px; margin: 0 auto; line-height: 1.7; }
+  .back-link { display: inline-block; margin-bottom: 1rem; font-size: 0.88rem; color: var(--tool-dark); text-decoration: none; }
+  .tool-body { max-width: 640px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+  .field-group { background: #fff; border: 1.5px solid var(--tool-light); border-radius: 14px; padding: 1.4rem 1.6rem; margin-bottom: 1rem; }
+  .field-group label { display: block; font-size: 0.88rem; font-weight: 600; color: var(--tool-deep, #1a1a1a); margin-bottom: 0.5rem; }
+  .field-group input, .field-group select { width: 100%; padding: 0.6rem 0.8rem; border: 1.5px solid var(--tool-light); border-radius: 8px; font-family: 'Sanchez', serif; font-size: 0.95rem; color: #2a2a2a; background: var(--tool-bg); box-sizing: border-box; }
+  .field-hint { font-size: 0.8rem; color: #777; margin-top: 0.3rem; }
+  .go-btn { display: block; width: 100%; margin-top: 1.5rem; padding: 0.9rem; background: var(--tool-dark); color: #fff; border: none; border-radius: 12px; font-family: 'Fraunces', serif; font-size: 1.1rem; cursor: pointer; transition: opacity 0.15s; }
+  .go-btn:hover { opacity: 0.88; }
+  .result-box { display: none; border-radius: 16px; padding: 2rem 1.5rem; margin-top: 1.5rem; }
+  .stat-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+  .stat-card { background: rgba(255,255,255,0.7); border-radius: 12px; padding: 1rem; text-align: center; }
+  .stat-num { font-family: 'Fraunces', serif; font-size: 2.4rem; font-weight: 600; line-height: 1; }
+  .stat-label { font-size: 0.78rem; color: #555; margin-top: 0.3rem; text-transform: uppercase; letter-spacing: 0.04em; }
+  .verdict { border-radius: 12px; padding: 1.2rem 1.4rem; margin-top: 0.5rem; }
+  .verdict h3 { font-family: 'Fraunces', serif; font-size: 1.3rem; font-weight: 500; margin: 0 0 0.4rem; }
+  .verdict p { font-size: 0.92rem; line-height: 1.7; margin: 0; }
+  .urgent-low { background: #E1F5EE; }  .urgent-low .stat-num { color: #0F6E56; } .urgent-low h3 { color: #0F6E56; }
+  .urgent-med { background: #FAEEDA; }  .urgent-med .stat-num { color: #854F0B; } .urgent-med h3 { color: #854F0B; }
+  .urgent-high { background: #FAECE7; } .urgent-high .stat-num { color: #993C1D; } .urgent-high h3 { color: #993C1D; }
+  .schedule-box { background: #fff; border: 1.5px solid var(--tool-light); border-radius: 14px; padding: 1.4rem 1.6rem; margin-top: 1.2rem; }
+  .schedule-box h4 { font-family: 'Fraunces', serif; font-size: 1rem; font-weight: 500; color: var(--tool-deeper); margin: 0 0 1rem; }
+  .week-row { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 0.8rem; margin-bottom: 0.6rem; font-size: 0.88rem; color: #444; }
+  .week-bar-wrap { background: #eee; border-radius: 4px; height: 10px; }
+  .week-bar { height: 100%; border-radius: 4px; background: var(--tool-dark); }
+  .phase-label { font-size: 0.75rem; color: var(--tool-dark); font-weight: 600; white-space: nowrap; }
+</style>
+</head>
+<body>
+<nav><a href="index.html" class="brand">Space to Learn</a><ul class="nav-links"><li><a href="index.html#tools">Tools</a></li><li><a href="index.html#wellbeing">Wellbeing</a></li></ul></nav>
+<div class="tool-hero">
+  <a href="index.html#tools" class="back-link">&larr; Back to tools</a>
+  <span class="cat">Study planner</span>
+  <h1>How much time do you actually have?</h1>
+  <p>Enter your exam date and how many topics you need to cover. The calculator tells you exactly what to tackle each day, and whether you are on track or need to shift gears.</p>
+</div>
+<div class="tool-body">
+  <div class="field-group">
+    <label for="exam-date">When is your exam?</label>
+    <input type="date" id="exam-date">
+  </div>
+  <div class="field-group">
+    <label for="num-topics">How many topics or units do you need to cover?</label>
+    <input type="number" id="num-topics" min="1" max="200" placeholder="e.g. 24">
+    <p class="field-hint">Count chapters, lecture blocks, flashcard decks, or whatever unit makes sense for your course.</p>
+  </div>
+  <div class="field-group">
+    <label for="study-days">How many days a week can you study?</label>
+    <select id="study-days">
+      <option value="7">Every day (7)</option>
+      <option value="6">6 days a week</option>
+      <option value="5" selected>5 days a week</option>
+      <option value="4">4 days a week</option>
+      <option value="3">3 days a week</option>
+    </select>
+  </div>
+  <button class="go-btn" onclick="calculate()">Calculate my study plan</button>
+  <div class="result-box" id="result">
+    <div class="stat-grid" id="stat-grid"></div>
+    <div class="verdict" id="verdict"></div>
+    <div class="schedule-box" id="schedule-box" style="display:none;">
+      <h4>Suggested pacing by week</h4>
+      <div id="week-rows"></div>
+    </div>
+  </div>
+</div>
+<footer>&nbsp;</footer>
+<script>
+function calculate() {
+  const dateVal = document.getElementById('exam-date').value;
+  const topics = parseInt(document.getElementById('num-topics').value);
+  const studyDays = parseInt(document.getElementById('study-days').value);
+  if (!dateVal || !topics || topics < 1) {
+    alert('Please fill in your exam date and number of topics.');
+    return;
+  }
+  const today = new Date(); today.setHours(0,0,0,0);
+  const exam = new Date(dateVal); exam.setHours(0,0,0,0);
+  const calDays = Math.round((exam - today) / 86400000);
+  if (calDays <= 0) { alert('That date looks like it has already passed. Try a future date.'); return; }
+  const studyableDays = Math.round(calDays * studyDays / 7);
+  const topicsPerDay = (topics / studyableDays).toFixed(1);
+  const weeks = Math.floor(calDays / 7);
+  const urgency = calDays >= 21 ? 'low' : calDays >= 10 ? 'med' : 'high';
+  const urgencyClass = { low: 'urgent-low', med: 'urgent-med', high: 'urgent-high' };
+  const verdicts = {
+    low: { emoji: '🌿', title: 'You have breathing room', text: `${calDays} days is enough time to study properly, not just cram. Do roughly ${topicsPerDay} topic${topicsPerDay == 1 ? '' : 's'} per study day, leave the last few days for review, and you will walk in feeling prepared.` },
+    med: { emoji: '⚡', title: 'You can still do this, but focus matters', text: `${calDays} days is tight but workable. At ${topicsPerDay} topic${topicsPerDay == 1 ? '' : 's'} per study day, you need to be deliberate. Cut anything optional from your schedule this week and protect your study blocks.` },
+    high: { emoji: '🔥', title: 'Time is short. Triage now.', text: `${calDays} day${calDays == 1 ? '' : 's'} is not a lot. At ${topicsPerDay} topic${topicsPerDay == 1 ? '' : 's'} per study day you are in sprint territory. Figure out which topics carry the most marks and hit those first. Done is better than perfect right now.` }
+  };
+  const v = verdicts[urgency];
+  document.getElementById('stat-grid').innerHTML = `
+    <div class="stat-card ${urgencyClass[urgency]}"><div class="stat-num">${calDays}</div><div class="stat-label">Days left</div></div>
+    <div class="stat-card ${urgencyClass[urgency]}"><div class="stat-num">${studyableDays}</div><div class="stat-label">Study days</div></div>
+    <div class="stat-card ${urgencyClass[urgency]}"><div class="stat-num">${topicsPerDay}</div><div class="stat-label">Topics/day</div></div>
+  `;
+  document.getElementById('verdict').className = 'verdict ' + urgencyClass[urgency];
+  document.getElementById('verdict').innerHTML = `<h3>${v.emoji} ${v.title}</h3><p>${v.text}</p>`;
+  // Week rows
+  if (weeks >= 2 && topics >= 4) {
+    const scheduleBox = document.getElementById('schedule-box');
+    scheduleBox.style.display = 'block';
+    const rows = document.getElementById('week-rows');
+    rows.innerHTML = '';
+    const totalWeeks = Math.ceil(calDays / 7);
+    const learningWeeks = Math.max(1, totalWeeks - 1);
+    const topicsPerLearningWeek = Math.ceil(topics / learningWeeks);
+    for (let w = 1; w <= Math.min(totalWeeks, 8); w++) {
+      const isLast = w === totalWeeks;
+      const covered = isLast ? topics : Math.min(topics, topicsPerLearningWeek * w);
+      const pct = Math.round(covered / topics * 100);
+      const label = isLast ? 'Review week' : `Week ${w}: topics 1&ndash;${Math.min(topics, topicsPerLearningWeek * w)}`;
+      rows.innerHTML += `<div class="week-row"><span class="phase-label">Week ${w}</span><div class="week-bar-wrap"><div class="week-bar" style="width:${pct}%"></div></div><span>${isLast ? 'Review' : pct + '%'}</span></div>`;
+    }
+  }
+  document.getElementById('result').style.display = 'block';
+  document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+// Set min date to today
+const todayStr = new Date().toISOString().split('T')[0];
+document.getElementById('exam-date').min = todayStr;
+</script>
+</body>
+</html>

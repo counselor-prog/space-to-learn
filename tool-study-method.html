@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What kind of studier are you? | Space to Learn</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Sanchez&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  :root { --tool: #BA7517; --tool-dark: #854F0B; --tool-light: #FAC775; --tool-bg: #FAEEDA; --tool-deeper: #412402; }
+  .tool-hero { background: var(--tool-bg); padding: 3rem 2rem 2.5rem; text-align: center; }
+  .tool-hero .cat { background: var(--tool-light); color: var(--tool-dark); padding: 4px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; display: inline-block; margin-bottom: 1rem; }
+  .tool-hero h1 { font-family: 'Fraunces', serif; font-size: 2.2rem; font-weight: 500; color: var(--tool-deeper); margin: 0 0 0.7rem; }
+  .tool-hero p { color: var(--tool-dark); max-width: 540px; margin: 0 auto; line-height: 1.7; }
+  .tool-body { max-width: 680px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+  .method-block { background: #fff; border: 1px solid var(--tool-light); border-radius: 14px; padding: 1.2rem 1.4rem; margin-bottom: 0.8rem; }
+  .method-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.7rem; gap: 1rem; }
+  .method-name { font-size: 0.95rem; font-weight: 600; color: #2a2a2a; flex: 1; }
+  .method-evidence { font-size: 0.75rem; padding: 2px 8px; border-radius: 10px; font-weight: 600; white-space: nowrap; }
+  .ev-high { background: #E1F5EE; color: #0F6E56; }
+  .ev-med { background: var(--tool-bg); color: var(--tool-dark); }
+  .ev-low { background: #FCEBEB; color: #A32D2D; }
+  .freq-btns { display: flex; gap: 0.4rem; }
+  .freq-btns label { cursor: pointer; padding: 5px 10px; border-radius: 8px; font-size: 0.8rem; border: 1.5px solid var(--tool-light); background: var(--tool-bg); color: var(--tool-dark); transition: all 0.12s; }
+  .freq-btns input { display: none; }
+  .freq-btns label:has(input:checked) { background: var(--tool-dark); color: #fff; border-color: var(--tool-dark); }
+  .go-btn { display: block; width: 100%; margin-top: 1.5rem; padding: 0.9rem; background: var(--tool-dark); color: #fff; border: none; border-radius: 12px; font-family: 'Fraunces', serif; font-size: 1.1rem; cursor: pointer; }
+  .go-btn:hover { opacity: 0.88; }
+  .results-area { display: none; margin-top: 1.5rem; }
+  .result-header { background: var(--tool-bg); border-radius: 14px; padding: 1.4rem; margin-bottom: 1rem; text-align: center; }
+  .result-header h2 { font-family: 'Fraunces', serif; color: var(--tool-deeper); font-size: 1.4rem; margin: 0 0 0.3rem; }
+  .result-header p { color: var(--tool-dark); font-size: 0.9rem; margin: 0; }
+  .method-result { background: #fff; border: 1px solid var(--tool-light); border-radius: 12px; padding: 1rem 1.2rem; margin-bottom: 0.7rem; }
+  .method-result-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+  .method-result-name { font-weight: 600; font-size: 0.92rem; }
+  .gap-badge { font-size: 0.75rem; padding: 3px 10px; border-radius: 10px; font-weight: 600; }
+  .gap-big { background: #FCEBEB; color: #A32D2D; }
+  .gap-med { background: var(--tool-bg); color: var(--tool-dark); }
+  .gap-none { background: #E1F5EE; color: #0F6E56; }
+  .bar-row { display: flex; gap: 0.5rem; align-items: center; font-size: 0.78rem; color: #5a5a5a; margin-bottom: 4px; }
+  .bar-wrap { flex: 1; height: 8px; background: #f0f0f0; border-radius: 4px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 4px; transition: width 0.6s; }
+  .bar-you { background: var(--tool-dark); }
+  .bar-eff { background: #1D9E75; }
+  .bar-label { width: 80px; text-align: right; }
+</style>
+</head>
+<body>
+<nav><a href="index.html" class="brand">Space to Learn</a><ul class="nav-links"><li><a href="index.html#tools">Tools</a></li><li><a href="index.html#strategies">Strategies</a></li></ul></nav>
+<div class="tool-hero">
+  <a href="index.html#tools" class="back-link" style="color: var(--tool-dark);">&larr; Back to tools</a>
+  <span class="cat">Study self-assessment</span>
+  <h1>What kind of studier are you?</h1>
+  <p>Rate how often you actually use each study method. Be honest, not aspirational. You'll get a gap analysis showing where your habits differ from what the evidence says works.</p>
+</div>
+<div class="tool-body">
+  <div id="methods"></div>
+  <button class="go-btn" onclick="showResults()">Show me my gaps</button>
+  <div class="results-area" id="results"></div>
+</div>
+<footer>&nbsp;</footer>
+<script>
+const methods = [
+  { name: "Re-reading notes or textbook", evidence: "low", effScore: 1, label: "Low evidence" },
+  { name: "Highlighting or underlining", evidence: "low", effScore: 1, label: "Low evidence" },
+  { name: "Watching lecture videos more than once", evidence: "low", effScore: 1.5, label: "Low evidence" },
+  { name: "Practice questions and self-testing", evidence: "high", effScore: 4, label: "High evidence" },
+  { name: "Spaced repetition (Anki or similar)", evidence: "high", effScore: 4, label: "High evidence" },
+  { name: "Explaining concepts out loud or to someone", evidence: "high", effScore: 3.5, label: "High evidence" },
+  { name: "Interleaving subjects in one session", evidence: "med", effScore: 3, label: "Good evidence" },
+  { name: "Drawing diagrams or concept maps from memory", evidence: "med", effScore: 3, label: "Good evidence" },
+];
+const freqs = ["Never","Sometimes","Often","Always"];
+const container = document.getElementById('methods');
+methods.forEach((m, i) => {
+  const b = document.createElement('div'); b.className = 'method-block';
+  b.innerHTML = `<div class="method-top"><span class="method-name">${m.name}</span><span class="method-evidence ev-${m.evidence}">${m.label}</span></div><div class="freq-btns">${freqs.map((f,v)=>`<label><input type="radio" name="m${i}" value="${v+1}"><span>${f}</span></label>`).join('')}</div>`;
+  container.appendChild(b);
+});
+function showResults() {
+  const checked = methods.map((_,i) => document.querySelector(`input[name="m${i}"]:checked`));
+  if (checked.some(c => !c)) { alert("Rate all 8 methods first."); return; }
+  const scores = checked.map(c => parseInt(c.value));
+  const res = document.getElementById('results');
+  let html = `<div class="result-header"><h2>Here is your gap map.</h2><p>The orange bars are how often you use each method. The green bars are how effective the evidence says it is. Bigger gap = bigger opportunity.</p></div>`;
+  const sorted = methods.map((m,i) => ({...m, you: scores[i]})).sort((a,b) => (b.effScore - b.you) - (a.effScore - a.you));
+  sorted.forEach(m => {
+    const gap = m.effScore - m.you;
+    const gapClass = gap >= 2 ? 'gap-big' : gap >= 1 ? 'gap-med' : 'gap-none';
+    const gapLabel = gap >= 2 ? 'Big gap' : gap >= 1 ? 'Some gap' : 'On track';
+    html += `<div class="method-result">
+      <div class="method-result-top"><span class="method-result-name">${m.name}</span><span class="gap-badge ${gapClass}">${gapLabel}</span></div>
+      <div class="bar-row"><span class="bar-label">You use it</span><div class="bar-wrap"><div class="bar-fill bar-you" style="width:${m.you/4*100}%"></div></div></div>
+      <div class="bar-row"><span class="bar-label">Evidence</span><div class="bar-wrap"><div class="bar-fill bar-eff" style="width:${m.effScore/4*100}%"></div></div></div>
+    </div>`;
+  });
+  res.innerHTML = html;
+  res.style.display = 'block';
+  res.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+</script>
+</body></html>
