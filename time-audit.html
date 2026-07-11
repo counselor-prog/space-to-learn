@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Where is your time going? | Space to Learn</title>
+<meta name="description" content="A step-by-step interactive time audit. Find out where your 24 hours actually go, check your screen time, and see if your week matches your priorities.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Sanchez&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  :root {
+    --moss-deep: #3a4f35;
+    --moss: #4a5d45;
+    --sand: #f5f0e8;
+    --sky: #d6e4e0;
+    --white: #ffffff;
+    --ink: #2a2a2a;
+    --ink-soft: #5a5a5a;
+  }
+
+  .audit-section {
+    max-width: 760px;
+    margin: 0 auto 4rem auto;
+    padding-bottom: 4rem;
+    border-bottom: 1px solid rgba(74,93,69,0.10);
+  }
+  .audit-section:last-child { border-bottom: none; }
+
+  .step-badge {
+    display: inline-block;
+    background: var(--moss-deep);
+    color: white;
+    font-family: 'Fraunces', serif;
+    font-size: 0.85rem;
+    padding: 0.25rem 0.8rem;
+    border-radius: 20px;
+    margin-bottom: 0.7rem;
+  }
+
+  .audit-section h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 1.7rem;
+    font-weight: 500;
+    color: var(--moss-deep);
+    margin-bottom: 0.6rem;
+  }
+
+  .audit-section p {
+    color: var(--ink-soft);
+    line-height: 1.75;
+    margin-bottom: 1rem;
+  }
+
+  /* PIE CHART */
+  .pie-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    align-items: start;
+    margin-top: 1.5rem;
+  }
+  @media (max-width: 600px) { .pie-layout { grid-template-columns: 1fr; } }
+
+  canvas#pieChart {
+    width: 100%;
+    max-width: 260px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+  }
+
+  .pie-inputs { display: flex; flex-direction: column; gap: 0.5rem; }
+
+  .pie-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .pie-dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .pie-row label {
+    flex: 1;
+    font-size: 0.88rem;
+    color: var(--ink);
+  }
+  .pie-row input {
+    width: 52px;
+    border: 1px solid rgba(74,93,69,0.25);
+    border-radius: 8px;
+    padding: 0.3rem 0.5rem;
+    font-size: 0.88rem;
+    text-align: center;
+    color: var(--ink);
+    background: var(--white);
+  }
+  .pie-row input:focus { outline: 2px solid var(--moss); }
+
+  #pieTotal {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--moss-deep);
+  }
+  #pieTotalWarn { color: #b04040; }
+
+  /* WEEKLY CALCULATOR */
+  .calc-grid {
+    display: grid;
+    gap: 0.6rem;
+    margin-top: 1.2rem;
+  }
+  .calc-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--white);
+    border: 1px solid rgba(74,93,69,0.12);
+    border-radius: 12px;
+    padding: 0.7rem 1rem;
+    gap: 1rem;
+  }
+  .calc-row label { font-size: 0.92rem; color: var(--ink); flex: 1; }
+  .calc-row input {
+    width: 70px;
+    border: 1px solid rgba(74,93,69,0.25);
+    border-radius: 8px;
+    padding: 0.35rem 0.5rem;
+    font-size: 0.9rem;
+    text-align: center;
+    color: var(--ink);
+    background: var(--sand);
+  }
+  .calc-row input:focus { outline: 2px solid var(--moss); background: var(--white); }
+
+  .calc-total-row {
+    background: var(--moss-deep);
+    color: white;
+    border-radius: 12px;
+    padding: 1rem 1.2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.5rem;
+    font-weight: 600;
+  }
+  .calc-free-row {
+    background: var(--sky);
+    border-radius: 12px;
+    padding: 1rem 1.2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.4rem;
+    font-weight: 600;
+    color: var(--moss-deep);
+  }
+
+  /* SCREEN TIME TABS */
+  .tab-row {
+    display: flex;
+    gap: 0.5rem;
+    margin: 1.2rem 0 1rem 0;
+  }
+  .tab-btn {
+    padding: 0.5rem 1.2rem;
+    border-radius: 20px;
+    border: 2px solid var(--moss-deep);
+    background: transparent;
+    color: var(--moss-deep);
+    font-family: 'Fraunces', serif;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .tab-btn.active { background: var(--moss-deep); color: white; }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  .steps-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+  .steps-list li {
+    display: flex;
+    gap: 0.9rem;
+    align-items: flex-start;
+    background: var(--white);
+    border: 1px solid rgba(74,93,69,0.12);
+    border-radius: 12px;
+    padding: 0.85rem 1rem;
+  }
+  .step-num-badge {
+    background: var(--moss-deep);
+    color: white;
+    border-radius: 50%;
+    width: 24px; height: 24px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.78rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .steps-list li span { font-size: 0.92rem; color: var(--ink); line-height: 1.55; }
+  .steps-list li strong { color: var(--moss-deep); }
+
+  .screen-tip {
+    background: var(--sand);
+    border-radius: 12px;
+    padding: 1rem 1.2rem;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+
+  /* PROCRASTINATION QUIZ */
+  .quiz-question {
+    background: var(--white);
+    border: 1px solid rgba(74,93,69,0.12);
+    border-radius: 14px;
+    padding: 1rem 1.2rem;
+    margin-bottom: 0.7rem;
+  }
+  .quiz-question p {
+    font-size: 0.92rem;
+    color: var(--ink);
+    margin-bottom: 0.6rem;
+  }
+  .quiz-options {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .quiz-options label {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.82rem;
+    color: var(--ink-soft);
+    cursor: pointer;
+    background: var(--sand);
+    border-radius: 20px;
+    padding: 0.3rem 0.7rem;
+    border: 2px solid transparent;
+    transition: all 0.12s;
+  }
+  .quiz-options input[type=radio] { display: none; }
+  .quiz-options input[type=radio]:checked + span {
+    font-weight: 600;
+  }
+  .quiz-options label:has(input:checked) {
+    background: var(--moss-deep);
+    color: white;
+    border-color: var(--moss-deep);
+  }
+
+  #quizResult {
+    display: none;
+    margin-top: 1.2rem;
+    background: var(--sky);
+    border-radius: 14px;
+    padding: 1.2rem 1.4rem;
+  }
+  #quizResult h3 {
+    font-family: 'Fraunces', serif;
+    color: var(--moss-deep);
+    margin-bottom: 0.4rem;
+    font-size: 1.1rem;
+  }
+  #quizResult p { font-size: 0.92rem; margin: 0; }
+
+  .quiz-btn {
+    margin-top: 1rem;
+    background: var(--moss-deep);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 0.65rem 1.6rem;
+    font-family: 'Fraunces', serif;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+  .quiz-btn:hover { opacity: 0.9; }
+
+  /* PRIORITIES */
+  .priorities-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+    margin: 1rem 0;
+  }
+  @media (max-width: 500px) { .priorities-grid { grid-template-columns: 1fr; } }
+
+  .priority-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: var(--white);
+    border: 1px solid rgba(74,93,69,0.12);
+    border-radius: 10px;
+    padding: 0.5rem 0.8rem;
+  }
+  .priority-num {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    color: var(--moss-deep);
+    font-size: 1rem;
+    min-width: 20px;
+  }
+  .priority-row input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: 0.9rem;
+    color: var(--ink);
+    outline: none;
+  }
+  .priority-row input::placeholder { color: #aaa; }
+
+  .reflect-area {
+    width: 100%;
+    min-height: 80px;
+    border: 1px solid rgba(74,93,69,0.2);
+    border-radius: 12px;
+    padding: 0.8rem 1rem;
+    font-size: 0.92rem;
+    font-family: inherit;
+    color: var(--ink);
+    background: var(--white);
+    resize: vertical;
+    box-sizing: border-box;
+    margin-top: 0.5rem;
+  }
+  .reflect-area:focus { outline: 2px solid var(--moss); }
+
+  .reflect-label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--moss-deep);
+    margin-top: 1.2rem;
+    display: block;
+  }
+</style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" class="brand">Space to Learn</a>
+    <ul class="nav-links">
+      <li><a href="index.html#strategies">Study Strategies</a></li>
+      <li><a href="index.html#time">Time Management</a></li>
+      <li><a href="index.html#wellbeing">Wellbeing</a></li>
+      <li><a href="index.html#articles">Articles</a></li>
+    </ul>
+  </nav>
+
+  <div class="article-hero">
+    <a href="index.html#time" class="back-link">&larr; Back to time management</a>
+    <span class="cat">Time Management</span>
+    <h1>Where is your time going?</h1>
+  </div>
+
+  <div class="article-body">
+
+    <p>Most students feel behind, overwhelmed, or like there is never enough time. Before changing anything, it helps to see clearly where your hours are actually going. Not where you think they go. Where they actually go. This tool walks you through that honestly, step by step.</p>
+
+    <p>Work through each section in order. It takes about ten minutes and most people find the results surprising.</p>
+
+    <!-- STEP 1: 24-HOUR CIRCLE -->
+    <div class="audit-section">
+      <div class="step-badge">Step 1</div>
+      <h2>Your 24 hours</h2>
+      <p>On a typical day, where does your time go? Enter how many hours you spend on each activity. The circle fills in as you go. The total must add up to 24.</p>
+
+      <div class="pie-layout">
+        <div>
+          <canvas id="pieChart" width="260" height="260"></canvas>
+          <div id="pieTotal">Total: 0 / 24 hours</div>
+        </div>
+        <div class="pie-inputs" id="pieInputs"></div>
+      </div>
+    </div>
+
+    <!-- STEP 2: WEEKLY BREAKDOWN -->
+    <div class="audit-section">
+      <div class="step-badge">Step 2</div>
+      <h2>Your week in hours</h2>
+      <p>There are 168 hours in every week. Enter how many hours per week you spend on each activity. The calculator will show your total and how many hours are left over.</p>
+
+      <div class="calc-grid" id="calcGrid"></div>
+      <div class="calc-total-row">
+        <span>Your total</span>
+        <span id="calcTotal">0 hrs</span>
+      </div>
+      <div class="calc-free-row">
+        <span>Free hours per week (168 minus your total)</span>
+        <span id="calcFree">168 hrs</span>
+      </div>
+    </div>
+
+    <!-- STEP 3: SCREEN TIME -->
+    <div class="audit-section">
+      <div class="step-badge">Step 3</div>
+      <h2>Find your actual screen time</h2>
+      <p>Most students underestimate how much time they spend on social media. Your phone already tracks this for you. Here is exactly how to find it, whether you have an iPhone or an Android.</p>
+
+      <div class="tab-row">
+        <button class="tab-btn active" onclick="showTab('iphone', this)">iPhone</button>
+        <button class="tab-btn" onclick="showTab('android', this)">Android</button>
+      </div>
+
+      <div id="iphone" class="tab-content active">
+        <ul class="steps-list">
+          <li><div class="step-num-badge">1</div><span>Open the <strong>Settings</strong> app on your iPhone (the grey icon with gears).</span></li>
+          <li><div class="step-num-badge">2</div><span>Scroll down and tap <strong>Screen Time</strong>.</span></li>
+          <li><div class="step-num-badge">3</div><span>If Screen Time is not turned on yet, tap <strong>Turn On Screen Time</strong> and follow the prompts. It will start tracking from that point forward.</span></li>
+          <li><div class="step-num-badge">4</div><span>Tap <strong>See All Activity</strong> at the top of the Screen Time page.</span></li>
+          <li><div class="step-num-badge">5</div><span>At the top, switch from <strong>Day</strong> to <strong>Week</strong> to see your weekly totals.</span></li>
+          <li><div class="step-num-badge">6</div><span>Scroll down to see time broken down by app and category. Social media apps appear under <strong>Social Networking</strong>.</span></li>
+          <li><div class="step-num-badge">7</div><span>Note your total weekly social media hours and add them into your weekly breakdown above under <strong>Social media and phone</strong>.</span></li>
+        </ul>
+        <div class="screen-tip">Tip: If someone else set up Screen Time with a passcode you don't know, go to Settings, Screen Time, and tap "Change Screen Time Passcode" to reset it.</div>
+      </div>
+
+      <div id="android" class="tab-content">
+        <ul class="steps-list">
+          <li><div class="step-num-badge">1</div><span>Open the <strong>Settings</strong> app on your Android phone.</span></li>
+          <li><div class="step-num-badge">2</div><span>Search for <strong>Digital Wellbeing</strong> in the search bar at the top, or scroll to find it. On Samsung devices it may be called <strong>Digital Wellbeing and Parental Controls</strong>.</span></li>
+          <li><div class="step-num-badge">3</div><span>Tap <strong>Digital Wellbeing</strong>. You will see a dashboard with a chart showing your usage.</span></li>
+          <li><div class="step-num-badge">4</div><span>Tap the chart or the <strong>Dashboard</strong> option to see time broken down by app.</span></li>
+          <li><div class="step-num-badge">5</div><span>To see weekly totals, look for a <strong>Week</strong> tab or toggle at the top of the dashboard. On some Samsung devices, swipe the chart left.</span></li>
+          <li><div class="step-num-badge">6</div><span>Find your social media apps (Instagram, TikTok, YouTube, Snapchat, etc.) and note how many hours per week you are spending on each one.</span></li>
+          <li><div class="step-num-badge">7</div><span>Add your total weekly social media hours into your weekly breakdown above under <strong>Social media and phone</strong>.</span></li>
+        </ul>
+        <div class="screen-tip">Tip: If you do not see Digital Wellbeing, your device may use a different name. Try searching "screen time" or "usage" in Settings. Older Android versions may not have this feature built in, but you can download the Google Family Link or ActionDash app for the same information.</div>
+      </div>
+    </div>
+
+    <!-- STEP 4: PROCRASTINATION QUIZ -->
+    <div class="audit-section">
+      <div class="step-badge">Step 4</div>
+      <h2>Are you a procrastinator?</h2>
+      <p>Answer each question honestly. There are no right or wrong answers. Select the option that best describes your usual behaviour, not your best week.</p>
+      <p style="font-size:0.88rem; color: var(--ink-soft);">Never = 1 &nbsp;&nbsp; Occasionally = 2 &nbsp;&nbsp; Often = 3 &nbsp;&nbsp; Always = 4</p>
+
+      <div id="quizQuestions"></div>
+      <button class="quiz-btn" onclick="scoreQuiz()">See my result</button>
+      <div id="quizResult">
+        <h3 id="quizResultTitle"></h3>
+        <p id="quizResultText"></p>
+      </div>
+    </div>
+
+    <!-- STEP 5: PRIORITIES -->
+    <div class="audit-section">
+      <div class="step-badge">Step 5</div>
+      <h2>What actually matters to you?</h2>
+      <p>Now that you know where your time goes, think about what is most important in your life right now. List your top 10 priorities in order, from most to least important. Be honest, not aspirational.</p>
+
+      <div class="priorities-grid" id="prioritiesGrid"></div>
+
+      <span class="reflect-label">How well does the time you spend each week match your priorities?</span>
+      <textarea class="reflect-area" placeholder="Write your honest answer here..."></textarea>
+
+      <span class="reflect-label">What do you need to add, reduce, or remove from your week to better match what matters most?</span>
+      <textarea class="reflect-area" placeholder="Be specific. What would actually change?"></textarea>
+
+      <span class="reflect-label">What will you add to your week?</span>
+      <textarea class="reflect-area" placeholder="New habits, commitments, blocks of time..."></textarea>
+
+      <span class="reflect-label">What will you reduce or stop?</span>
+      <textarea class="reflect-area" placeholder="Be honest about what is taking time without giving much back..."></textarea>
+    </div>
+
+  </div>
+
+  <footer>&nbsp;</footer>
+
+<script>
+// ---- PIE CHART ----
+const pieCategories = [
+  { label: 'Sleep', color: '#3a4f35' },
+  { label: 'Classes', color: '#6b8f71' },
+  { label: 'Studying', color: '#a8c5a0' },
+  { label: 'Work', color: '#d4a847' },
+  { label: 'Eating & meals', color: '#e8c87a' },
+  { label: 'Personal care', color: '#7ab5c8' },
+  { label: 'Family & home', color: '#4a8fa0' },
+  { label: 'Commuting', color: '#b87a5a' },
+  { label: 'Social media', color: '#d4736a' },
+  { label: 'Exercise', color: '#8fba8f' },
+  { label: 'Socializing', color: '#c4a882' },
+  { label: 'Relaxation', color: '#a0b8c4' },
+];
+
+const pieInputsEl = document.getElementById('pieInputs');
+const pieValues = pieCategories.map(() => 0);
+
+pieCategories.forEach((cat, i) => {
+  const row = document.createElement('div');
+  row.className = 'pie-row';
+  row.innerHTML = `
+    <div class="pie-dot" style="background:${cat.color}"></div>
+    <label>${cat.label}</label>
+    <input type="number" min="0" max="24" step="0.5" value="0" data-i="${i}">
+  `;
+  pieInputsEl.appendChild(row);
+});
+
+pieInputsEl.addEventListener('input', e => {
+  const i = e.target.dataset.i;
+  if (i === undefined) return;
+  pieValues[i] = parseFloat(e.target.value) || 0;
+  drawPie();
+  updatePieTotal();
+});
+
+function drawPie() {
+  const canvas = document.getElementById('pieChart');
+  const ctx = canvas.getContext('2d');
+  const cx = 130, cy = 130, r = 120;
+  ctx.clearRect(0, 0, 260, 260);
+
+  const total = pieValues.reduce((a, b) => a + b, 0);
+  if (total === 0) {
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.fillStyle = '#e8e8e8';
+    ctx.fill();
+    return;
+  }
+
+  let startAngle = -Math.PI / 2;
+  pieValues.forEach((val, i) => {
+    if (val <= 0) return;
+    const slice = (val / Math.max(total, 24)) * Math.PI * 2;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, r, startAngle, startAngle + slice);
+    ctx.closePath();
+    ctx.fillStyle = pieCategories[i].color;
+    ctx.fill();
+    ctx.strokeStyle = 'white';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    startAngle += slice;
+  });
+
+  if (total < 24) {
+    const remaining = ((24 - total) / 24) * Math.PI * 2;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, r, startAngle, startAngle + remaining);
+    ctx.closePath();
+    ctx.fillStyle = '#e8e8e8';
+    ctx.fill();
+  }
+}
+
+function updatePieTotal() {
+  const total = pieValues.reduce((a, b) => a + b, 0);
+  const el = document.getElementById('pieTotal');
+  if (total > 24) {
+    el.innerHTML = `<span id="pieTotalWarn">Total: ${total} / 24 hours (over by ${(total-24).toFixed(1)})</span>`;
+  } else {
+    el.textContent = `Total: ${total} / 24 hours`;
+  }
+}
+
+drawPie();
+
+// ---- WEEKLY CALCULATOR ----
+const calcCategories = [
+  'Class time',
+  'Studying, projects, papers',
+  'Commuting',
+  'Eating and personal care',
+  'Work (paid employment)',
+  'Responsibilities at home',
+  'Exercise and sport',
+  'Social media and phone',
+  'Television and streaming',
+  'Socializing and entertainment',
+  'Sleeping',
+  'Other (add your own)',
+  'Wasted hours (honest estimate)',
+];
+
+const calcGrid = document.getElementById('calcGrid');
+calcCategories.forEach((label, i) => {
+  const row = document.createElement('div');
+  row.className = 'calc-row';
+  row.innerHTML = `<label>${label}</label><input type="number" min="0" max="168" step="0.5" value="" placeholder="hrs" data-calc="${i}">`;
+  calcGrid.appendChild(row);
+});
+
+calcGrid.addEventListener('input', updateCalc);
+
+function updateCalc() {
+  const inputs = calcGrid.querySelectorAll('input');
+  let total = 0;
+  inputs.forEach(inp => { total += parseFloat(inp.value) || 0; });
+  document.getElementById('calcTotal').textContent = total.toFixed(1) + ' hrs';
+  const free = 168 - total;
+  document.getElementById('calcFree').textContent = (free >= 0 ? free.toFixed(1) : 0) + ' hrs';
+}
+
+// ---- TABS ----
+function showTab(id, btn) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ---- QUIZ ----
+const quizData = [
+  { q: 'I feel I have to "cram" before an exam.', group: 'A' },
+  { q: 'My homework is turned in on time.', group: 'B' },
+  { q: 'I think I get enough sleep.', group: 'B' },
+  { q: 'I pull all-nighters before mid-terms and finals.', group: 'A' },
+  { q: 'I plan activities with friends or family and stick to the time I planned.', group: 'B' },
+  { q: 'When working on a paper, I put off writing until a few days before it is due.', group: 'A' },
+  { q: 'I cancel social activities because I feel I do not have enough time.', group: 'A' },
+  { q: 'I get my papers in on time.', group: 'B' },
+  { q: 'I find myself making excuses to instructors about why my work is not done.', group: 'A' },
+  { q: 'I feel comfortable about how I use my time right now.', group: 'B' },
+  { q: 'I feel like something is always hanging over my head and I will never have enough time.', group: 'A' },
+  { q: 'I feel tired most of the time.', group: 'A' },
+];
+
+const quizContainer = document.getElementById('quizQuestions');
+quizData.forEach((item, qi) => {
+  const block = document.createElement('div');
+  block.className = 'quiz-question';
+  block.innerHTML = `<p>${qi + 1}. ${item.q}</p>
+    <div class="quiz-options">
+      ${[1,2,3,4].map(v => `<label><input type="radio" name="q${qi}" value="${v}"><span>${['Never','Occasionally','Often','Always'][v-1]}</span></label>`).join('')}
+    </div>`;
+  quizContainer.appendChild(block);
+});
+
+function scoreQuiz() {
+  let scoreA = 0, scoreB = 0, complete = true;
+  quizData.forEach((item, qi) => {
+    const checked = document.querySelector(`input[name="q${qi}"]:checked`);
+    if (!checked) { complete = false; return; }
+    const val = parseInt(checked.value);
+    if (item.group === 'A') scoreA += val;
+    else scoreB += val;
+  });
+
+  if (!complete) {
+    alert('Please answer all 12 questions before checking your result.');
+    return;
+  }
+
+  const result = document.getElementById('quizResult');
+  const title = document.getElementById('quizResultTitle');
+  const text = document.getElementById('quizResultText');
+  result.style.display = 'block';
+
+  if (scoreA > scoreB) {
+    title.textContent = 'You are probably a procrastinator.';
+    text.textContent = `Score A: ${scoreA} vs Score B: ${scoreB}. That is not a character flaw, it is a habit. And habits can change. The first step is being honest about the pattern, which you just were. Look back at your weekly hours above and find where the time is leaking.`;
+  } else if (scoreB > scoreA) {
+    title.textContent = 'You manage your time well.';
+    text.textContent = `Score B: ${scoreB} vs Score A: ${scoreA}. You have solid habits in place. The question is whether those habits are getting you closer to your priorities. Check your weekly hours above and see if the time matches what matters most to you.`;
+  } else {
+    title.textContent = 'You procrastinate sometimes, but it is not a fixed pattern.';
+    text.textContent = `Score A: ${scoreA}, Score B: ${scoreB}. It shows up in certain situations but has not become a default habit. Notice which areas tend to trigger the delay and address those specifically.`;
+  }
+
+  result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// ---- PRIORITIES ----
+const prioritiesGrid = document.getElementById('prioritiesGrid');
+for (let i = 1; i <= 10; i++) {
+  const row = document.createElement('div');
+  row.className = 'priority-row';
+  row.innerHTML = `<span class="priority-num">${i}.</span><input type="text" placeholder="e.g. family, health, degree...">`;
+  prioritiesGrid.appendChild(row);
+}
+</script>
+
+</body>
+</html>
